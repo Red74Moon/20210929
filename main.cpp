@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <conio.h>
+#include <Windows.h>
 
 using namespace std;
 
@@ -9,6 +10,7 @@ void MapDraw();
 void Precess();
 void MovePlayer(int XDirection, int YDirection);
 bool IsGoal();
+void ChangeColor(int Color);
 
 //1.지도를 초기화한다.
 int Map[10][10] = {
@@ -69,7 +71,10 @@ void MapDraw()
 		{
 			if (PlayerX == X && PlayerY == Y)
 			{
-				cout << "P" << " ";
+				ChangeColor(171);
+				cout << "P";
+				ChangeColor(7);
+				cout << " ";
 			}
 			else if (Map[Y][X] == 0)
 			{
@@ -81,7 +86,10 @@ void MapDraw()
 			}
 			else if (Map[Y][X] == 9)
 			{
-				cout << "G" << " ";
+				ChangeColor(14);
+				cout << "G";
+				ChangeColor(7);
+				cout << " ";
 			}
 		}
 		cout << endl;
@@ -147,4 +155,9 @@ void MovePlayer(int XDirection, int YDirection)
 bool IsGoal()
 {
 	return Map[PlayerY][PlayerX] == 9 ? true : false;
+}
+
+void ChangeColor(int Color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color);
 }
