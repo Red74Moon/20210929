@@ -173,7 +173,6 @@ void Process()
 	}
 }
 
-
 void MovePlayer(int XDirection, int YDirection)
 {
 	int NewPlayerX = PlayerX + XDirection;
@@ -198,7 +197,7 @@ bool IsGoal()
 void StatusMassge()
 {	
 	cout << endl << "[ N : 다음 맵 / B : 이전 맵 ]" << endl;
-	cout << "[ G : 목적지 / P : 플레이어 ]" << endl;
+	cout <<         "[ G : 목적지 / P : 플레이어 ]" << endl;
 	cout << endl << "[ MAP : " << ZMap + 1 << " ]" << endl;
 }
 
