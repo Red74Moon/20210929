@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <conio.h>
 #include <Windows.h>
@@ -7,45 +6,64 @@ using namespace std;
 
 void Input();
 void MapDraw();
-void Precess();
+void Process();
 void MovePlayer(int XDirection, int YDirection);
 bool IsGoal();
-void ChangeColor(int Color);
 
-//1.지도를 초기화한다.
-int Map[10][10] = {
-	{1,1,1,1,1,1,1,1,1,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,1,1,1,0,0,0,0,1},
-	{1,0,1,0,0,0,1,0,0,1},
-	{1,0,1,0,0,0,1,0,0,1},
-	{1,0,1,1,0,0,1,0,0,1},
-	{1,0,0,0,0,0,1,0,0,1},
-	{1,0,1,1,1,0,1,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,1,1,1,1,1,1,1,9,1}
+int Map[3][10][10] = {
+	{
+		{1,1,1,1,1,1,1,1,1,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,1,1,1,0,0,0,0,1},
+		{1,0,1,0,0,0,1,0,0,1},
+		{1,0,1,0,0,0,1,0,0,1},
+		{1,0,1,1,0,0,1,0,0,1},
+		{1,0,0,0,0,0,1,0,0,1},
+		{1,0,1,1,1,0,1,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,1,1,1,1,1,1,1,9,1}
+	},
+	{
+		{1,9,1,1,1,1,1,1,8,1},
+		{1,0,1,0,0,0,0,0,0,1},
+		{1,0,1,0,0,0,0,1,0,1},
+		{1,0,1,0,1,1,1,1,0,1},
+		{1,0,1,0,0,0,0,0,0,1},
+		{1,0,1,0,0,0,0,1,0,1},
+		{1,0,1,0,0,1,1,1,0,1},
+		{1,0,1,1,0,0,0,1,0,1},
+		{1,0,0,0,0,0,0,1,0,1},
+		{1,1,1,1,1,1,1,1,1,1}
+	},
+	{
+		{1,1,1,1,1,1,1,1,1,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,3,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,8,0,0,0,0,1},
+		{1,1,1,1,1,1,1,1,1,1}
+	}
+
 };
 int PlayerX = 4;
 int PlayerY = 4;
 
 int Key;
+int ZMap = 0;
 
 bool GameStauts = true;
 
 int main()
-{	
+{
 	while (GameStauts)
 	{
 		MapDraw();
-
-		//2.입력을 받는다.
 		Input();
-
-		//3.처리한다. 
-		//  플레이어를 움직인다.
-		Precess();
-
-		//4.지도를 그린다.
+		Process();
 		MapDraw();
 	}
 	return 0;
@@ -53,9 +71,8 @@ int main()
 
 void Input()
 {
-	cout << "W(U), A(L), S(D), D(R), G(END)" << endl;
 	Key = _getch();
-	if (Key == 0x00 || Key == 0xE0) 
+	if (Key == 0x00 || Key == 0xE0)
 	{
 		Key = _getch();
 	}
@@ -64,100 +81,116 @@ void Input()
 void MapDraw()
 {
 	system("cls");
-
+	// 지도 그리기
 	for (int Y = 0; Y < 10; ++Y)
 	{
 		for (int X = 0; X < 10; ++X)
 		{
 			if (PlayerX == X && PlayerY == Y)
 			{
-				ChangeColor(171);
-				cout << "P";
-				ChangeColor(7);
-				cout << " ";
+				cout << "P" << " ";
 			}
-			else if (Map[Y][X] == 0)
+			else if (Map[ZMap][Y][X] == 0)
 			{
 				cout << " " << " ";
 			}
-			else if (Map[Y][X] == 1)
+			else if (Map[ZMap][Y][X] == 1)
 			{
 				cout << "X" << " ";
 			}
-			else if (Map[Y][X] == 9)
+			else if (Map[ZMap][Y][X] == 9)
 			{
-				ChangeColor(14);
-				cout << "G";
-				ChangeColor(7);
-				cout << " ";
+				cout << "N" << " ";
+			}
+			else if (Map[ZMap][Y][X] == 3)
+			{
+				cout << "G" << " ";
+			}
+			else if (Map[ZMap][Y][X] == 8)
+			{
+				cout << "B" << " ";
 			}
 		}
 		cout << endl;
 	}
-	cout << endl << endl;
+	//상태 메시지
+	cout << endl << "[ N : 다음 맵 / B : 이전 맵 ]" << endl;
+	cout <<         "[ G : 목적지 / P : 플레이어 ]" << endl;
+	cout << endl << "[ MAP : " << ZMap + 1 << " ]" << endl;
 }
 
-void Precess()
+void Process()
 {
+	//키입력 분석
 	switch (Key)
 	{
-		//UP
-		case 'W':
-		case 'w':
-		{
-			MovePlayer(0, -1);
-			break;
-		}
-		//Left
-		case 'A':
-		case 'a':
-		{
-			MovePlayer(-1, 0);
-			break;
-		}
-		//Right
-		case 'D':
-		case 'd':
-		{
-			MovePlayer(1, 0);
-			break;
-		}
-		//Down
-		case 'S':
-		case 's':
-		{
-			MovePlayer(0, 1);
-			break;
-		}
+	case 'W':
+	case 'w':
+	{
+		MovePlayer(0, -1);
 		break;
 	}
+	case 'S':
+	case 's':
+	{
+		MovePlayer(0, 1);
+		break;
+	}
+	case 'A':
+	case 'a':
+	{
+		MovePlayer(-1, 0);
+		break;
+	}
+	case 'D':
+	case 'd':
+	{
+		MovePlayer(1, 0);
+		break;
+	}
+	break;
+	}
+
+	// 게임 상태 확인
 	if (IsGoal())
 	{
 		GameStauts = false;
 	}
+
+	// 다음 맵 이동
+	if (Map[ZMap][PlayerY][PlayerX] == 9)
+	{
+		ZMap++;
+	}
+
+	// 이전 맵 이동
+	if (Map[ZMap][PlayerY][PlayerX] == 8)
+	{
+		ZMap--;
+	}
 }
+
 
 void MovePlayer(int XDirection, int YDirection)
 {
 	int NewPlayerX = PlayerX + XDirection;
 	int NewPlayerY = PlayerY + YDirection;
 
-	//미리가봄
-	if (Map[NewPlayerY][NewPlayerX] == 0 || 
-		Map[NewPlayerY][NewPlayerX] == 9)
+	if (Map[ZMap][NewPlayerY][NewPlayerX] == 0 ||
+		Map[ZMap][NewPlayerY][NewPlayerX] == 9 || // 다음 맵 N
+		Map[ZMap][NewPlayerY][NewPlayerX] == 8 || // 이전 맵 B
+		Map[ZMap][NewPlayerY][NewPlayerX] == 3)   // 종료 G
 	{
-		//이동
 		PlayerX = NewPlayerX;
 		PlayerY = NewPlayerY;
-	} 
+	}
 }
 
 bool IsGoal()
 {
-	return Map[PlayerY][PlayerX] == 9 ? true : false;
+	// 3이면 게임 종료
+	return Map[ZMap][PlayerY][PlayerX] == 3 ? true : false;
 }
 
-void ChangeColor(int Color)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Color);
-}
+
+
