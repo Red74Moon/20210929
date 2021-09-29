@@ -9,6 +9,7 @@ void MapDraw();
 void Process();
 void MovePlayer(int XDirection, int YDirection);
 bool IsGoal();
+void StatusMassge();
 
 int Map[3][10][10] = {
 	{
@@ -66,6 +67,8 @@ int main()
 		Process();
 		MapDraw();
 	}
+
+	cout << endl << endl << endl << "게임 탈출" << endl << endl << endl;
 	return 0;
 }
 
@@ -114,9 +117,7 @@ void MapDraw()
 		cout << endl;
 	}
 	//상태 메시지
-	cout << endl << "[ N : 다음 맵 / B : 이전 맵 ]" << endl;
-	cout <<         "[ G : 목적지 / P : 플레이어 ]" << endl;
-	cout << endl << "[ MAP : " << ZMap + 1 << " ]" << endl;
+	StatusMassge();
 }
 
 void Process()
@@ -160,12 +161,14 @@ void Process()
 	// 다음 맵 이동
 	if (Map[ZMap][PlayerY][PlayerX] == 9)
 	{
+		PlayerX = PlayerY = 4;
 		ZMap++;
 	}
 
 	// 이전 맵 이동
 	if (Map[ZMap][PlayerY][PlayerX] == 8)
 	{
+		PlayerX = PlayerY = 4;
 		ZMap--;
 	}
 }
@@ -190,6 +193,13 @@ bool IsGoal()
 {
 	// 3이면 게임 종료
 	return Map[ZMap][PlayerY][PlayerX] == 3 ? true : false;
+}
+
+void StatusMassge()
+{	
+	cout << endl << "[ N : 다음 맵 / B : 이전 맵 ]" << endl;
+	cout << "[ G : 목적지 / P : 플레이어 ]" << endl;
+	cout << endl << "[ MAP : " << ZMap + 1 << " ]" << endl;
 }
 
 
