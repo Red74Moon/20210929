@@ -7,34 +7,35 @@ using namespace std;
 void Input();
 void MapDraw();
 void Precess();
+void MovePlayer(int XDirection, int YDirection);
 
 //1.지도를 초기화한다.
 int Map[10][10] = {
 	{1,1,1,1,1,1,1,1,1,1},
 	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,1},
+	{1,0,1,1,1,0,0,0,0,1},
+	{1,0,1,0,0,0,1,0,0,1},
+	{1,0,1,0,0,0,1,0,0,1},
+	{1,0,1,1,0,0,1,0,0,1},
+	{1,0,0,0,0,0,1,0,0,1},
+	{1,0,1,1,1,0,1,0,0,1},
+	{1,0,0,0,0,0,0,0,9,1},
 	{1,1,1,1,1,1,1,1,1,1}
 };
-int PlayerX = 3;
-int PlayerY = 3;
+int PlayerX = 4;
+int PlayerY = 4;
 
-char Key;
+int Key;
 
 bool GameStauts = true;
 
 int main()
 {	
-	MapDraw();
-
 	while (GameStauts)
 	{
 		//2.입력을 받는다.
+		MapDraw();
+
 		Input();
 
 		//3.처리한다. 
@@ -49,13 +50,18 @@ int main()
 
 void Input()
 {
-	cout << "W, A, S, D, Q(end) " << endl;
+	cout << "W(U), A(L), S(D), D(R), Q(END) " << endl;
 	Key = _getch();
+	if (Key == 0x00 || Key == 0xE0) 
+	{
+		Key = _getch();
+	}
 }
 
 void MapDraw()
 {
 	system("cls");
+
 	for (int Y = 0; Y < 10; ++Y)
 	{
 		for (int X = 0; X < 10; ++X)
@@ -64,13 +70,17 @@ void MapDraw()
 			{
 				cout << "P" << " ";
 			}
-			else if (Map[X][Y] == 0)
+			else if (Map[Y][X] == 0)
 			{
 				cout << " " << " ";
 			}
-			else if (Map[X][Y] == 1)
+			else if (Map[Y][X] == 1)
 			{
 				cout << "X" << " ";
+			}
+			else if (Map[Y][X] == 9)
+			{
+				cout << "G" << " ";
 			}
 		}
 		cout << endl;
@@ -86,56 +96,28 @@ void Precess()
 		case 'W':
 		case 'w':
 		{
-			if (PlayerY == 1)
-			{
-				cout << "break" << endl;
-			}
-			else
-			{
-				PlayerY--;
-			}
+			MovePlayer(0, -1);
 			break;
 		}
 		//Left
 		case 'A':
 		case 'a':
 		{
-			if (PlayerX == 1)
-			{
-				cout << "break" << endl;
-			}
-			else
-			{
-				PlayerX--;
-			}
+			MovePlayer(-1, 0);
 			break;
 		}
 		//Right
 		case 'D':
 		case 'd':
 		{
-			if (PlayerX == 8)
-			{
-				cout << "break" << endl;
-			}
-			else
-			{
-				PlayerX++;
-			}
+			MovePlayer(1, 0);
 			break;
 		}
 		//Down
 		case 'S':
 		case 's':
 		{
-			if (PlayerY == 8)
-			{
-				cout << "break" << endl;
-			}
-			else
-			{
-				PlayerY++;
-			}
+			MovePlayer(0, 1);
 			break;
 		}
 		case 'Q':
@@ -146,5 +128,21 @@ void Precess()
 		}
 		break;
 	}
+}
 
+void MovePlayer(int XDirection, int YDirection)
+{
+	int NewPlayerX = PlayerX + XDirection;
+	int NewPlayerY = PlayerY + YDirection;
+
+	if (Map[NewPlayerY][NewPlayerX] == 0)
+	{
+		PlayerX = NewPlayerX;
+		PlayerY = NewPlayerY;
+	} else if (Map[NewPlayerY][NewPlayerX] == 9)
+	{
+		PlayerX = NewPlayerX;
+		PlayerY = NewPlayerY;
+		GameStauts = false;
+	}
 }
