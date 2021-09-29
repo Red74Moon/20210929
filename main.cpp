@@ -8,6 +8,7 @@ void Input();
 void MapDraw();
 void Precess();
 void MovePlayer(int XDirection, int YDirection);
+bool IsGoal();
 
 //1.지도를 초기화한다.
 int Map[10][10] = {
@@ -19,8 +20,8 @@ int Map[10][10] = {
 	{1,0,1,1,0,0,1,0,0,1},
 	{1,0,0,0,0,0,1,0,0,1},
 	{1,0,1,1,1,0,1,0,0,1},
-	{1,0,0,0,0,0,0,0,9,1},
-	{1,1,1,1,1,1,1,1,1,1}
+	{1,0,0,0,0,0,0,0,0,1},
+	{1,1,1,1,1,1,1,1,9,1}
 };
 int PlayerX = 4;
 int PlayerY = 4;
@@ -33,9 +34,9 @@ int main()
 {	
 	while (GameStauts)
 	{
-		//2.입력을 받는다.
 		MapDraw();
 
+		//2.입력을 받는다.
 		Input();
 
 		//3.처리한다. 
@@ -50,7 +51,7 @@ int main()
 
 void Input()
 {
-	cout << "W(U), A(L), S(D), D(R), Q(END) " << endl;
+	cout << "W(U), A(L), S(D), D(R), G(END)" << endl;
 	Key = _getch();
 	if (Key == 0x00 || Key == 0xE0) 
 	{
@@ -120,13 +121,11 @@ void Precess()
 			MovePlayer(0, 1);
 			break;
 		}
-		case 'Q':
-		case 'q':
-		{
-			GameStauts = false;
-			break;
-		}
 		break;
+	}
+	if (IsGoal())
+	{
+		GameStauts = false;
 	}
 }
 
@@ -135,14 +134,17 @@ void MovePlayer(int XDirection, int YDirection)
 	int NewPlayerX = PlayerX + XDirection;
 	int NewPlayerY = PlayerY + YDirection;
 
-	if (Map[NewPlayerY][NewPlayerX] == 0)
+	//미리가봄
+	if (Map[NewPlayerY][NewPlayerX] == 0 || 
+		Map[NewPlayerY][NewPlayerX] == 9)
 	{
+		//이동
 		PlayerX = NewPlayerX;
 		PlayerY = NewPlayerY;
-	} else if (Map[NewPlayerY][NewPlayerX] == 9)
-	{
-		PlayerX = NewPlayerX;
-		PlayerY = NewPlayerY;
-		GameStauts = false;
-	}
+	} 
+}
+
+bool IsGoal()
+{
+	return Map[PlayerY][PlayerX] == 9 ? true : false;
 }
